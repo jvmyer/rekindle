@@ -181,8 +181,8 @@
         "npm run build läuft ohne Fehler durch"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Prisma 7 requires @prisma/adapter-libsql driver adapter for SQLite runtime initialization (no URL in schema.prisma). next-pwa requires next.config.js (CommonJS) not next.config.mjs."
     }
   ]
 }
