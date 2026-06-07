@@ -5,6 +5,7 @@ export async function GET() {
   try {
     const books = await prisma.book.findMany({
       orderBy: { createdAt: "desc" },
+      include: { _count: { select: { questions: true } } },
     });
     return NextResponse.json(books);
   } catch {
