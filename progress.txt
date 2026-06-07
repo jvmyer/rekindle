@@ -29,6 +29,25 @@ Started: Sun Jun  7 14:09:39 CEST 2026
   - `npm run dev` serves on port 3000; Next.js 14.2.35 is current LTS
 ---
 
+## 2026-06-07T15:30 - US-003
+- Implemented: Mobile UI for books list and add-book form
+- Updated `app/api/books/route.ts` GET to include `_count: { select: { questions: true } }` for question count per book
+- Replaced boilerplate `app/page.tsx` with client component featuring:
+  - Books list with title, author, source badge (color-coded: Kindle=orange, Goodreads=amber, Manual=gray), question count
+  - Empty state: "Noch keine Bücher — füge dein erstes Buch hinzu"
+  - Loading spinner while fetching
+  - FAB (+) button fixed bottom-right (56×56px)
+  - Bottom sheet modal with form: Titel*, Autor*, Genre, Gelesen am (date picker), Quelle (select)
+  - After submit: list refreshes, modal closes
+- Updated `app/layout.tsx` metadata title/description
+- Files changed: app/page.tsx, app/api/books/route.ts, app/layout.tsx
+- **Learnings for future iterations:**
+  - `'use client'` directive required for useState/useEffect pages — can't mix server component data fetching with client interactivity in the same file without wrapping
+  - Prisma `include: { _count: { select: { questions: true } } }` adds question count to book query results
+  - Bottom sheet overlay: fixed inset-0 backdrop + fixed bottom-0 sheet with z-index layering (backdrop z-40, sheet z-50)
+  - Browser testing unavailable (no MCP browser tools configured) — manual verification needed
+---
+
 ## 2026-06-07T15:00 - US-002
 - Implemented: Books API CRUD routes — GET /api/books, POST /api/books, GET /api/books/[id], DELETE /api/books/[id]
 - Files changed: app/api/books/route.ts, app/api/books/[id]/route.ts
