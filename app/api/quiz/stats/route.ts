@@ -12,7 +12,7 @@ export async function GET() {
     const todayEnd = new Date()
     todayEnd.setHours(23, 59, 59, 999)
 
-    const [totalQuestions, totalBooks, todayReviews, allReviewDates] =
+    const [totalQuestions, totalBooks, todayReviews, allReviewDates, totalReviewed, totalCorrect] =
       await Promise.all([
         prisma.question.count(),
         prisma.book.count(),
@@ -24,6 +24,8 @@ export async function GET() {
           select: { date: true },
           orderBy: { date: 'desc' },
         }),
+        prisma.dailyReview.count(),
+        prisma.dailyReview.count({ where: { wasCorrect: true } }),
       ])
 
     const reviewedToday = todayReviews.length
@@ -47,6 +49,8 @@ export async function GET() {
       reviewedToday,
       correctToday,
       currentStreak,
+      totalReviewed,
+      totalCorrect,
     })
   } catch (error) {
     console.error(error)

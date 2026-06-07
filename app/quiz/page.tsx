@@ -124,7 +124,7 @@ export default function QuizPage() {
             Füge Bücher hinzu und generiere Fragen um das Quiz zu starten.
           </p>
           <Link
-            href="/"
+            href="/books"
             className="inline-flex items-center justify-center h-12 px-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold rounded-xl"
           >
             Zu den Büchern
@@ -226,7 +226,7 @@ export default function QuizPage() {
         </div>
       </header>
 
-      <main className="flex-1 px-4 pb-8 flex flex-col">
+      <main className="flex-1 px-4 pb-20 flex flex-col">
         <div className="flex-1 flex flex-col space-y-4">
           <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col flex-1">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 truncate">

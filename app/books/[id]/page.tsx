@@ -101,7 +101,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     try {
       const res = await fetch(`/api/books/${bookId}`);
       if (!res.ok) {
-        router.push('/');
+        router.push('/books');
         return;
       }
       const data = await res.json();
@@ -135,7 +135,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     try {
       const res = await fetch(`/api/books/${bookId}`, { method: 'DELETE' });
       if (res.ok) {
-        router.push('/');
+        router.push('/books');
       }
     } finally {
       setDeleting(false);
@@ -161,7 +161,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
       {/* Header */}
       <header className="px-4 pt-12 pb-4 flex items-start gap-3">
         <Link
-          href="/"
+          href="/books"
           className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 active:bg-gray-200 dark:active:bg-gray-700 transition-colors"
           aria-label="Zurück"
         >
