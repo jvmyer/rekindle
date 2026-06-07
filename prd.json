@@ -1,0 +1,188 @@
+{
+  "project": "Books_knowledge_Base",
+  "branchName": "ralph/phase-1-foundation",
+  "description": "KI-gestütztes Buch-Wissens-Retention-System — mobile-first PWA. Bücher verwalten, KI generiert Fragen (Grok API), täglich 10 Fragen auf dem Handy beantworten.",
+  "techStack": {
+    "framework": "Next.js 14 (App Router)",
+    "language": "TypeScript",
+    "styling": "Tailwind CSS",
+    "database": "SQLite via Prisma ORM",
+    "ai": "Grok API (xAI) — OpenAI-kompatibler Endpunkt: https://api.x.ai/v1, Modell: grok-3-mini",
+    "pwa": "next-pwa für mobile Installation"
+  },
+  "designPrinciples": [
+    "Mobile-first: alles primär für 390px Breite (iPhone) designed",
+    "Minimalistisch: viel Weißraum, klare Typografie, wenig Farbe",
+    "Dark mode ready: system preference respektieren",
+    "Tap targets mindestens 44px hoch"
+  ],
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Projekt-Setup: Next.js + TypeScript + Tailwind + Prisma + SQLite",
+      "description": "Als Entwickler brauche ich ein sauberes Grundgerüst damit alle weiteren Stories darauf aufbauen können.",
+      "acceptanceCriteria": [
+        "Next.js 14 Projekt mit App Router und TypeScript erstellt",
+        "Tailwind CSS konfiguriert",
+        "Prisma mit SQLite als Provider initialisiert (datasource db, provider = 'sqlite', url = 'file:./dev.db')",
+        "Prisma Schema enthält Book-Model: id, title, author, genre (optional), dateRead (optional), source (KINDLE|GOODREADS|MANUAL), coverUrl (optional), createdAt",
+        "Prisma Schema enthält Question-Model: id, questionText, answerText, bookId (FK), difficulty (EASY|MEDIUM|HARD), createdAt",
+        "Prisma Schema enthält DailyReview-Model: id, date, questionId (FK), answeredAt (optional), wasCorrect (optional)",
+        "Migration erfolgreich ausgeführt: npx prisma migrate dev --name init",
+        "Prisma Client generiert",
+        ".env.local Datei mit XAI_API_KEY=your-key-here Platzhalter angelegt",
+        ".env.local in .gitignore eingetragen",
+        "npm run dev startet ohne Fehler",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Books API: CRUD Endpunkte für Bücher",
+      "description": "Als App brauche ich API-Routen um Bücher abzufragen und anzulegen.",
+      "acceptanceCriteria": [
+        "GET /api/books gibt alle Bücher als JSON zurück (sortiert nach createdAt desc)",
+        "POST /api/books nimmt { title, author, genre?, dateRead?, source, coverUrl? } entgegen, validiert title und author als required, gibt das erstellte Buch zurück",
+        "GET /api/books/[id] gibt ein einzelnes Buch inkl. zugehöriger Questions zurück (questions als nested array)",
+        "DELETE /api/books/[id] löscht Buch und alle zugehörigen Questions (cascade)",
+        "Prisma Client als Singleton in lib/prisma.ts implementiert (verhindert zu viele Connections in Dev)",
+        "Alle Routen mit try/catch und sinnvollen HTTP Status Codes (200, 201, 400, 404, 500)",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Mobile UI: Bücher-Liste und Buch hinzufügen",
+      "description": "Als Nutzer will ich auf dem Handy meine Bücher sehen und neue Bücher manuell hinzufügen.",
+      "acceptanceCriteria": [
+        "Startseite / zeigt Liste aller Bücher (Titel, Autor, Quelle-Badge, Anzahl Fragen falls vorhanden)",
+        "Minimalistisches Design: weißer/dunkelgrauer Hintergrund, klare Schrift, kein unnötiger Schnickschnack",
+        "Floating Action Button (+) öffnet ein Bottom Sheet / Modal-Formular für neues Buch",
+        "Formularfelder: Titel (required), Autor (required), Genre (optional), Gelesen am (date picker, optional), Quelle (Select: Manuell / Kindle / Goodreads)",
+        "Nach erfolgreichem Speichern wird Liste aktualisiert und Formular geschlossen",
+        "Leerer Zustand: freundliche Nachricht 'Noch keine Bücher — füge dein erstes Buch hinzu'",
+        "Tap targets mindestens 44px",
+        "Layout funktioniert auf 390px Breite korrekt",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Grok API Integration: Fragen für ein Buch generieren",
+      "description": "Als Nutzer will ich mit einem Tap Fragen zu einem Buch automatisch generieren lassen.",
+      "acceptanceCriteria": [
+        "POST /api/books/[id]/generate-questions ruft die Grok API auf",
+        "Grok API Aufruf: POST https://api.x.ai/v1/chat/completions, Authorization: Bearer {XAI_API_KEY}, model: grok-3-mini",
+        "Prompt an Grok: 'Generiere 20 Fragen und Antworten auf Deutsch zum Buch \"{title}\" von {author}. Konzentriere dich auf Kernkonzepte, interessante Fakten, Charaktere/Personen und wichtige Erkenntnisse. Antworte NUR mit einem JSON-Array: [{\"question\": \"...\", \"answer\": \"...\", \"difficulty\": \"EASY|MEDIUM|HARD\"}]'",
+        "Antwort geparst und 20 Question-Datensätze in DB gespeichert (bookId gesetzt)",
+        "Doppelte Generierung vermieden: wenn bereits Fragen für ein Buch existieren, werden diese erst gelöscht bevor neue erstellt werden",
+        "Route gibt { generated: 20, bookId } zurück",
+        "Fehlerbehandlung wenn XAI_API_KEY fehlt (500 mit klarer Fehlermeldung)",
+        "Fehlerbehandlung wenn Grok API nicht erreichbar oder ungültige Antwort zurückgibt",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "XAI_API_KEY muss in .env.local gesetzt sein. Grok API ist OpenAI-kompatibel (gleiche SDK-Struktur, andere base URL + API Key)."
+    },
+    {
+      "id": "US-005",
+      "title": "Buch-Detail-Seite mit Fragen-Übersicht und Generierungs-Button",
+      "description": "Als Nutzer will ich ein einzelnes Buch aufrufen, alle generierten Fragen sehen und neue generieren können.",
+      "acceptanceCriteria": [
+        "Route /books/[id] zeigt Buch-Details: Titel, Autor, Genre, Datum, Quelle",
+        "Unterhalb: Liste aller Fragen des Buches (Frage sichtbar, Antwort eingeklappt / Toggle)",
+        "Button 'Fragen generieren (KI)' — bei Klick POST /api/books/[id]/generate-questions, Loading-State anzeigen, danach Liste aktualisieren",
+        "Anzahl generierter Fragen angezeigt (z.B. '15 Fragen')",
+        "Leerer Zustand der Fragen: 'Noch keine Fragen — generiere sie mit KI'",
+        "Zurück-Button zur Bücherliste",
+        "Löschen-Button für das Buch (mit Bestätigungs-Dialog)",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Daily Quiz API: 10 tägliche Fragen aus dem Pool",
+      "description": "Als App brauche ich eine Route die täglich 10 Fragen aus allen verfügbaren Fragen auswählt.",
+      "acceptanceCriteria": [
+        "GET /api/quiz/today gibt 10 Fragen zurück (inklusive book.title und book.author als nested Objekt)",
+        "Auswahl-Logik: Fragen die heute noch nicht in DailyReview sind werden bevorzugt. Falls weniger als 10 übrig: mit zufälligen Fragen aus dem Gesamtpool auffüllen",
+        "Falls weniger als 10 Fragen in der DB insgesamt: alle verfügbaren zurückgeben",
+        "Antworten (answerText) werden NICHT im Response mitgeschickt (erst per separatem Endpunkt abrufbar)",
+        "GET /api/quiz/answer/[questionId] gibt { answer: string } zurück (für Antwort-Reveal)",
+        "POST /api/quiz/review nimmt { questionId, wasCorrect: boolean } entgegen und speichert DailyReview Eintrag",
+        "GET /api/quiz/stats gibt { totalQuestions, totalBooks, reviewedToday, correctToday, currentStreak } zurück",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Daily Quiz UI: 10 Fragen auf dem Handy beantworten",
+      "description": "Als Nutzer will ich täglich 10 Fragen auf dem Handy durchgehen, die Antwort aufdecken und markieren ob ich es wusste.",
+      "acceptanceCriteria": [
+        "Route /quiz zeigt die 10 täglichen Fragen als Card-Swipe oder Scroll-Interface",
+        "Jede Karte zeigt: Buchtitel (klein, oben), Frage (groß, zentriert), Difficulty-Badge",
+        "Button 'Antwort anzeigen' klappt die Antwort auf (animiert)",
+        "Nach Antwort-Reveal: zwei Buttons 'Wusste ich ✓' und 'Nicht gewusst ✗'",
+        "Fortschrittsbalken oben: '3 / 10 beantwortet'",
+        "Nach der letzten Frage: Abschluss-Screen mit Score (z.B. '7/10 richtig') und Zurück-Button",
+        "Wenn für heute bereits alle 10 beantwortet: Nachricht 'Heute fertig! Komm morgen wieder. 🎉' mit Stats",
+        "Minimalistisches Design, große Tap-Targets, flüssige Übergänge",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Home Dashboard: Übersicht und Navigation",
+      "description": "Als Nutzer will ich auf der Startseite einen schnellen Überblick über meinen Fortschritt sehen und zur täglichen Review gelangen.",
+      "acceptanceCriteria": [
+        "Startseite zeigt Stats-Kacheln: Anzahl Bücher, Anzahl Fragen gesamt, Heute beantwortet X/10",
+        "Prominenter CTA-Button 'Heute lernen — X Fragen warten' der zu /quiz führt",
+        "Wenn heute bereits alle 10 gemacht: Button zeigt 'Heute geschafft ✓' (grün, disabled oder zu Stats führend)",
+        "Navigation: Bottom Navigation Bar mit 3 Tabs: Lernen (Quiz), Bücher (Liste), Statistik",
+        "Stats-Seite /stats zeigt: Streak, Fragen pro Buch (Top-Liste), korrekte Antworten in % gesamt",
+        "Alle Seiten nutzen dieselbe Layout-Komponente mit Bottom Nav",
+        "npx tsc --noEmit besteht ohne Fehler"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "PWA Setup: App auf dem Handy installierbar machen",
+      "description": "Als Nutzer will ich die App auf meinem iPhone/Android Homescreen installieren können.",
+      "acceptanceCriteria": [
+        "next-pwa installiert und in next.config.js konfiguriert",
+        "public/manifest.json mit name, short_name, icons, theme_color, background_color, display: standalone",
+        "App-Icons in public/icons/ (mindestens 192x192 und 512x512 PNG — können einfache Platzhalter sein)",
+        "Service Worker generiert und registriert",
+        "Meta-Tags in layout.tsx: viewport, apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, theme-color",
+        "App lässt sich in Chrome DevTools unter Application > Manifest ohne Fehler anzeigen",
+        "npx tsc --noEmit besteht ohne Fehler",
+        "npm run build läuft ohne Fehler durch"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
