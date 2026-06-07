@@ -1,3 +1,30 @@
 # Ralph Progress Log
 Started: Sun Jun  7 14:09:39 CEST 2026
 ---
+
+## Codebase Patterns
+- Prisma 7 no longer accepts `url` in schema.prisma datasource; move it to `prisma.config.ts` `datasource.url`
+- Prisma 7 no longer accepts `datasourceUrl` in PrismaClient constructor; just use `new PrismaClient()`
+- Prisma config file is `prisma.config.ts` (not just schema); db URL set there as `file:./prisma/dev.db`
+- `node_modules/.bin/tsc` may be a copy (not symlink) breaking execution; fix with `ln -s ../typescript/bin/tsc node_modules/.bin/tsc`
+- When scaffolding with create-next-app in a temp dir and copying files, use `cp -r /tmp/pkg/.` NOT with `--preserve` to avoid copying broken symlinks, then do `npm install` fresh to regenerate node_modules
+- The copied .git directory from create-next-app initializes on `main`; create `ralph/phase-1-foundation` branch afterwards
+
+## 2026-06-07T14:15 - US-001
+- Implemented: Full project scaffolding - Next.js 14 with App Router, TypeScript, Tailwind CSS, Prisma 7 with SQLite
+- Created Next.js app in /tmp/books-kb and copied files (excluding node_modules/.git), ran npm install fresh
+- Set up prisma/schema.prisma with Book, Question, DailyReview models and BookSource/Difficulty enums
+- Configured prisma.config.ts (Prisma 7 format) with SQLite URL pointing to prisma/dev.db
+- Ran `npx prisma migrate dev --name init` successfully
+- Ran `npx prisma generate` successfully
+- Created lib/prisma.ts as PrismaClient singleton (globalThis pattern for dev hot-reload safety)
+- Created .env.local with XAI_API_KEY=your-key-here
+- Added prisma/dev.db and .env to .gitignore
+- All checks pass: `npx tsc --noEmit` ✓, `npm run dev` starts on port 3000 ✓
+- Files changed: prisma/schema.prisma, prisma.config.ts, prisma/migrations/*, lib/prisma.ts, .gitignore, .env.local, package.json, package-lock.json
+- **Learnings for future iterations:**
+  - Prisma 7 is a major version with breaking changes vs Prisma 5/6; URL config moved to prisma.config.ts
+  - SQLite enums work via Prisma (stored as strings in the DB)
+  - The prisma.config.ts needs to import dotenv if using env vars; for simplicity, hard-coded the path for dev
+  - `npm run dev` serves on port 3000; Next.js 14.2.35 is current LTS
+---
