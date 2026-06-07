@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
@@ -17,6 +17,18 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Books Knowledge Base",
   description: "KI-gestütztes Buch-Wissens-Retention-System",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Books KB",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#3B82F6",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
