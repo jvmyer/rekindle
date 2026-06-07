@@ -56,3 +56,16 @@ Started: Sun Jun  7 14:09:39 CEST 2026
   - Cascade deletes for Questions work automatically via Prisma schema `onDelete: Cascade` on the book relation
   - `lib/prisma.ts` singleton was already in place from US-001; just import `@/lib/prisma`
 ---
+
+## 2026-06-07T16:00 - US-004
+- Implemented: POST /api/books/[id]/generate-questions — calls Grok API (OpenAI-compatible, https://api.x.ai/v1, model: grok-3-mini)
+- Prompt asks for 20 German Q&A pairs as a JSON array; response parsed by extracting the first `[...]` block
+- Deletes existing questions for the book before inserting new ones (idempotent re-generation)
+- Returns `{ generated: count, bookId }`
+- Error handling: missing/placeholder API key (500), Grok API HTTP errors (502), invalid/unparseable JSON response (502), book not found (404)
+- Files changed: app/api/books/[id]/generate-questions/route.ts (new file)
+- **Learnings for future iterations:**
+  - Grok API response may wrap JSON in markdown fences; extract `[...]` with a regex before `JSON.parse` to be safe
+  - `createMany` returns `{ count }` not the created records; use that for the `generated` field
+  - XAI_API_KEY check should also reject the placeholder value "your-key-here" to give a clear error
+---

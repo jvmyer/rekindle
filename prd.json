@@ -91,7 +91,7 @@
         "npx tsc --noEmit besteht ohne Fehler"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "XAI_API_KEY muss in .env.local gesetzt sein. Grok API ist OpenAI-kompatibel (gleiche SDK-Struktur, andere base URL + API Key)."
     },
     {
