@@ -9,6 +9,9 @@ Started: Sun Jun  7 14:09:39 CEST 2026
 - `node_modules/.bin/tsc` may be a copy (not symlink) breaking execution; fix with `ln -s ../typescript/bin/tsc node_modules/.bin/tsc`
 - When scaffolding with create-next-app in a temp dir and copying files, use `cp -r /tmp/pkg/.` NOT with `--preserve` to avoid copying broken symlinks, then do `npm install` fresh to regenerate node_modules
 - The copied .git directory from create-next-app initializes on `main`; create `ralph/phase-1-foundation` branch afterwards
+- Run `npx prisma generate` after any `npm install` or after adding new model fields; without it, Prisma returns `any` types and tsc will fail on callback parameter types
+- lib/prisma.ts exports named `prisma` (not default); always use `import { prisma } from '@/lib/prisma'`
+- Use Prisma `select` (not `include`) to exclude sensitive fields from API responses naturally; avoids post-processing destructuring hacks
 
 ## 2026-06-07T14:15 - US-001
 - Implemented: Full project scaffolding - Next.js 14 with App Router, TypeScript, Tailwind CSS, Prisma 7 with SQLite
@@ -85,4 +88,19 @@ Started: Sun Jun  7 14:09:39 CEST 2026
   - `useCallback` needed for `fetchBook` to avoid stale closure warnings with `useEffect` dependency array
   - Collapsible question cards implemented as a separate `QuestionCard` component to keep per-item state isolated
   - Browser testing unavailable (no MCP browser tools configured) — manual verification needed
+---
+
+## 2026-06-07T18:00 - US-006
+- Implemented: Daily Quiz API — four routes under app/api/quiz/
+  - GET /api/quiz/today: returns up to 10 questions with book.title/author, no answerText. Shuffles unreviewed questions first, fills remainder from full pool
+  - GET /api/quiz/answer/[questionId]: returns { answer: string } for reveal
+  - POST /api/quiz/review: validates questionId + wasCorrect, saves DailyReview record
+  - GET /api/quiz/stats: returns totalQuestions, totalBooks, reviewedToday, correctToday, currentStreak
+- Files changed: app/api/quiz/today/route.ts, app/api/quiz/answer/[questionId]/route.ts, app/api/quiz/review/route.ts, app/api/quiz/stats/route.ts (all new)
+- **Learnings for future iterations:**
+  - Prisma client types are not automatically regenerated between npm install and tsc; `npx prisma generate` must be run explicitly — if tsc gives `any` for Prisma return types, the generated client is likely missing
+  - Named import `{ prisma }` not default import — lib/prisma.ts uses `export const prisma` not `export default`
+  - Use `select` (not `include`) in Prisma queries to naturally exclude sensitive fields (answerText) instead of post-processing
+  - `notIn: []` (empty array) in Prisma matches all records — safe to use unconditionally without a length-check guard
+  - Streak logic: iterate backward from today using a date-key set; stops at first day with no reviews
 ---
