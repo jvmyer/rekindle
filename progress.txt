@@ -2,6 +2,26 @@
 Started: Sun Jun  7 14:09:39 CEST 2026
 ---
 
+## 2026-06-07T19:00 - US-007
+- Implemented: Daily Quiz UI at /quiz — single-card view with progress bar
+- Created `app/quiz/page.tsx` (client component) with 5 phases: loading, quiz, done, already_done, no_questions
+- Fetches stats + questions in parallel on mount; if reviewedToday >= 10 shows "Heute fertig!" screen
+- Quiz card: book title (small, uppercase, truncated), question text (large), difficulty badge
+- "Antwort anzeigen" button fetches `/api/quiz/answer/[id]`, answer slides in with CSS animation
+- After reveal: "Wusste ich ✓" / "Nicht gewusst ✗" buttons (fire-and-forget POST to /api/quiz/review)
+- Progress bar + counter ("3 / 10 beantwortet") in header updates per question
+- Completion screen shows correctCount/total with emoji + message; back button to /
+- Already-done screen shows correctToday/reviewedToday and streak from initial stats fetch
+- Added `@keyframes slideDown` + `.animate-slide-down` utility to `app/globals.css`
+- Files changed: app/quiz/page.tsx (new), app/globals.css
+- `npx tsc --noEmit` passes ✓
+- **Learnings for future iterations:**
+  - No_questions state handled separately from already_done to give better UX messaging
+  - CSS animation class added to globals.css @layer utilities (works with Tailwind purging)
+  - Review POST is fire-and-forget (no await) to avoid blocking UI transition
+  - Browser testing unavailable (no MCP browser tools configured) — manual verification needed
+---
+
 ## Codebase Patterns
 - Prisma 7 no longer accepts `url` in schema.prisma datasource; move it to `prisma.config.ts` `datasource.url`
 - Prisma 7 no longer accepts `datasourceUrl` in PrismaClient constructor; just use `new PrismaClient()`
