@@ -2,6 +2,25 @@
 Started: Sun Jun  7 14:09:39 CEST 2026
 ---
 
+## 2026-06-07T20:00 - US-008
+- Implemented: Home Dashboard with stats tiles, CTA button, Bottom Nav, and /stats page
+- Extended `/api/quiz/stats` to include `totalReviewed` and `totalCorrect` (all-time counts for % display)
+- Created `app/components/BottomNav.tsx` — shared client component using `usePathname` for active tab highlighting; 3 tabs: Lernen (/), Bücher (/books), Statistik (/stats)
+- Added `<BottomNav />` to `app/layout.tsx` so it appears on all pages
+- Created `app/books/page.tsx` — moved books list from root page here; FAB repositioned to `bottom-20` to clear nav bar
+- Transformed `app/page.tsx` into dashboard: 3 stat tiles (Bücher, Fragen, Heute X/10) + CTA button that changes to "Heute geschafft ✓" when reviewedToday >= 10 + streak display
+- Created `app/stats/page.tsx`: streak, correct %, total reviewed, per-book question count top-list (sorted descending)
+- Updated `app/books/[id]/page.tsx`: back link → "/books", delete redirect → "/books"
+- Updated `app/quiz/page.tsx`: "Zu den Büchern" link → "/books"; quiz main pb-8 → pb-20 to clear nav bar
+- `npx tsc --noEmit` passes ✓
+- **Learnings for future iterations:**
+  - BottomNav must be a Client Component (`'use client'`) to use `usePathname`; server layout can import it fine
+  - FAB needs `bottom-20` (not `bottom-6`) when a fixed bottom nav (h-16) is present to avoid overlap
+  - When adding shared layout chrome (nav bar), audit all pages for bottom padding and fixed-bottom elements
+  - Stats API now returns `totalReviewed` + `totalCorrect` in addition to today-scoped values
+  - Browser testing unavailable (no MCP browser tools configured) — manual verification needed
+---
+
 ## 2026-06-07T19:00 - US-007
 - Implemented: Daily Quiz UI at /quiz — single-card view with progress bar
 - Created `app/quiz/page.tsx` (client component) with 5 phases: loading, quiz, done, already_done, no_questions

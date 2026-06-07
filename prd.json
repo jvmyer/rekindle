@@ -163,7 +163,7 @@
         "npx tsc --noEmit besteht ohne Fehler"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
