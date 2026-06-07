@@ -69,3 +69,20 @@ Started: Sun Jun  7 14:09:39 CEST 2026
   - `createMany` returns `{ count }` not the created records; use that for the `generated` field
   - XAI_API_KEY check should also reject the placeholder value "your-key-here" to give a clear error
 ---
+
+## 2026-06-07T17:00 - US-005
+- Implemented: Book detail page at /books/[id] — server route already existed (GET /api/books/[id] returning questions), only UI needed
+- Created `app/books/[id]/page.tsx` as a client component with:
+  - Back button (← to /) in the header
+  - Book meta: source badge, genre badge, dateRead formatted in German locale
+  - "Fragen generieren (KI)" button calling POST /api/books/[id]/generate-questions with loading state; refreshes book data after success
+  - Question list: collapsible cards (toggle answer visibility) with difficulty badges (Leicht/Mittel/Schwer color-coded)
+  - Empty state for questions: "Noch keine Fragen — Generiere sie mit KI"
+  - Delete button opening a bottom-sheet confirmation dialog; on confirm calls DELETE /api/books/[id] then redirects to /
+- `npx tsc --noEmit` passes without errors
+- **Learnings for future iterations:**
+  - `params` in Next.js 14 App Router client pages is a Promise — must resolve it via `useEffect` + `useState` (not `use(params)` which requires React 19)
+  - `useCallback` needed for `fetchBook` to avoid stale closure warnings with `useEffect` dependency array
+  - Collapsible question cards implemented as a separate `QuestionCard` component to keep per-item state isolated
+  - Browser testing unavailable (no MCP browser tools configured) — manual verification needed
+---
