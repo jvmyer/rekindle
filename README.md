@@ -1,4 +1,4 @@
-<h1 align="center">Books Knowledge Base</h1>
+<h1 align="center">Rekindle</h1>
 
 <p align="center">
   <strong>Turn the books you read into knowledge you keep.</strong><br>
@@ -17,12 +17,12 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
-  <img alt="Books Knowledge Base: add a book, get 20 AI-generated questions, answer 10 of them every day on your phone" src="docs/images/hero-light.png">
+  <img alt="Rekindle: add a book, get 20 AI-generated questions, answer 10 of them every day on your phone" src="docs/images/hero-light.png">
 </picture>
 
 ## Why
 
-You finish a book, and a few months later most of it is gone. Books Knowledge Base fixes that with **active recall**: instead of rereading notes, you answer questions about specific details from each book, a little every day.
+You finish a book, and a few months later most of it is gone. Rekindle fixes that with **active recall**: instead of rereading notes, you answer questions about specific details from each book, a little every day.
 
 The AI is instructed to avoid generic questions that anyone could answer without having read the book. Each question asks about something specific: a character's decision, an argument, an experiment, a name or a scene.
 
@@ -75,8 +75,8 @@ The AI is instructed to avoid generic questions that anyone could answer without
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/jvmyer/Books_knowledge_Base.git
-cd Books_knowledge_Base
+git clone https://github.com/jvmyer/rekindle.git
+cd rekindle
 npm install
 
 # 2. Configure environment variables

@@ -1,6 +1,6 @@
 {
-  "name": "Books Knowledge Base",
-  "short_name": "Books KB",
+  "name": "Rekindle",
+  "short_name": "Rekindle",
   "description": "KI-gestütztes Buch-Wissens-Retention-System",
   "start_url": "/",
   "display": "standalone",

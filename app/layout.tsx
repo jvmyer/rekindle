@@ -15,13 +15,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Books Knowledge Base",
+  title: "Rekindle",
   description: "KI-gestütztes Buch-Wissens-Retention-System",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Books KB",
+    title: "Rekindle",
   },
 };
 
