@@ -63,7 +63,7 @@ Antworte NUR mit einem JSON-Array (kein weiterer Text): [{"question": "...", "an
       const errorText = await response.text();
       console.error("Grok API error:", response.status, errorText);
       return NextResponse.json(
-        { error: "Grok API request failed", details: errorText },
+        { error: "Groq API request failed" },
         { status: 502 }
       );
     }
