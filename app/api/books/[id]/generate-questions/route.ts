@@ -12,10 +12,10 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey || apiKey === "your-key-here") {
       return NextResponse.json(
-        { error: "XAI_API_KEY is not configured" },
+        { error: "GROQ_API_KEY is not configured" },
         { status: 500 }
       );
     }
@@ -32,17 +32,30 @@ export async function POST(
       return NextResponse.json({ error: "Book not found" }, { status: 404 });
     }
 
-    const prompt = `Generiere 20 Fragen und Antworten auf Deutsch zum Buch "${book.title}" von ${book.author}. Konzentriere dich auf Kernkonzepte, interessante Fakten, Charaktere/Personen und wichtige Erkenntnisse. Antworte NUR mit einem JSON-Array: [{"question": "...", "answer": "...", "difficulty": "EASY|MEDIUM|HARD"}]`;
+    const systemPrompt = `Du bist ein Literaturexperte mit tiefem Wissen über das Buch "${book.title}" von ${book.author}. Deine Aufgabe ist es, Fragen zu generieren, die nur jemand beantworten kann, der dieses Buch wirklich gelesen hat.`;
 
-    const response = await fetch("https://api.x.ai/v1/chat/completions", {
+    const prompt = `Generiere 20 präzise Fragen und Antworten auf Deutsch zum Buch "${book.title}" von ${book.author}.
+
+WICHTIG — Diese Regeln sind zwingend:
+1. Frage ausschließlich nach konkreten Details aus dem Buch: spezifische Figuren und ihre Entscheidungen, genaue Ereignisse und deren Reihenfolge, konkrete Konzepte/Theorien/Fakten die im Buch erklärt werden, Namen, Orte, Zahlen oder Dialoge die vorkommen
+2. KEINE generischen Fragen die man ohne das Buch beantworten könnte (z.B. nicht "Was ist die Hauptthese?" oder allgemeine Sachfragen zum Thema)
+3. Jede Frage muss sich auf etwas Spezifisches beziehen, das im Buch tatsächlich vorkommt — ein Kapitel, eine Szene, eine Person, ein Argument, ein Experiment, ein Zitat
+4. Schwierigkeitsgrade: EASY = konkrete Fakten/Figuren direkt aus dem Buch, MEDIUM = Zusammenhänge und Motive zwischen Ereignissen/Figuren, HARD = tiefe Analyse, Details die man leicht übersieht, oder Verknüpfungen mehrerer Buchteile
+
+Antworte NUR mit einem JSON-Array (kein weiterer Text): [{"question": "...", "answer": "...", "difficulty": "EASY|MEDIUM|HARD"}]`;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "grok-3-mini",
-        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt },
+        ],
       }),
     });
 

@@ -83,18 +83,14 @@ function QuestionCard({ question }: { question: Question }) {
   );
 }
 
-export default function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function BookDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [bookId, setBookId] = useState<string | null>(null);
-
-  useEffect(() => {
-    params.then(({ id }) => setBookId(id));
-  }, [params]);
+  const bookId = params.id;
 
   const fetchBook = useCallback(async () => {
     if (!bookId) return;
