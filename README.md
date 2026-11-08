@@ -12,6 +12,7 @@
   <img alt="SQLite" src="https://img.shields.io/badge/SQLite-local-003B57?logo=sqlite&logoColor=white">
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white">
   <img alt="PWA" src="https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
 </p>
 
 <picture>
@@ -151,3 +152,7 @@ public/manifest.json         PWA manifest and icons
 | `npm run build` | Create a production build (also generates the service worker) |
 | `npm start` | Serve the production build |
 | `npm run lint` | Run ESLint |
+
+## License
+
+[MIT](LICENSE)
